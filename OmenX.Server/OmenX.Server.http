@@ -1,0 +1,6 @@
+@OmenX.Server_HostAddress = http://localhost:5282
+
+GET {{OmenX.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

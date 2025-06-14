@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "omenx.client", "omenx.client\omenx.client.esproj", "{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmenX.Server", "OmenX.Server\OmenX.Server.csproj", "{59C01632-32D3-4462-AEFF-B5898DAEE899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmenX", "OmenX\OmenX.csproj", "{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E597E610-49B1-EBB4-4F0D-6D6A99529BDB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{59C01632-32D3-4462-AEFF-B5898DAEE899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C01632-32D3-4462-AEFF-B5898DAEE899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C01632-32D3-4462-AEFF-B5898DAEE899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C01632-32D3-4462-AEFF-B5898DAEE899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9ECDCC1-2F21-4ED8-8D60-B696F0641EFE}
+	EndGlobalSection
+EndGlobal
