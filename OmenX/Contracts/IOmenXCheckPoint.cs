@@ -1,6 +1,9 @@
-﻿namespace OmenX.Contracts;
+﻿using System.Threading.Tasks;
 
-public interface IOmenXCheckPoint
+namespace OmenX.Contracts
 {
-    public Task CheckAsync(OmeXCheckPointContext checkPointContext);
+    public interface IOmenXCheckPoint
+    {
+        Task CheckAsync(OmeXCheckPointContext checkContext);
+    }
 }

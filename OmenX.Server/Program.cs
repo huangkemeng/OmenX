@@ -1,3 +1,4 @@
+using OmenX.Extensions;
 
 namespace OmenX.Server
 {
@@ -8,14 +9,14 @@ namespace OmenX.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.AddOmenX();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options => { options.AddOmenXApiDoc(); });
 
             var app = builder.Build();
-
+            app.UseOmenX();
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -23,16 +24,13 @@ namespace OmenX.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options => { options.UseOmenXApiDoc(); });
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.MapFallbackToFile("/index.html");
 
             app.Run();
