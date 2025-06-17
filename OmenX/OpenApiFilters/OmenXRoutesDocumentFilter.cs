@@ -63,8 +63,8 @@ namespace OmenX.OpenApiFilters
             checklistPathItem.AddOperation(OperationType.Get, checkListOperation);
             swaggerDoc.Paths.Add("/api/omen-x/checklists", checklistPathItem);
 
-
-            if (!context.SchemaRepository.Schemas.ContainsKey(typeof(OmeXCheckResult).FullName))
+            var omeXCheckResultId = typeof(OmeXCheckResult).FullName.Replace(".", "_");
+            if (!context.SchemaRepository.Schemas.ContainsKey(omeXCheckResultId))
             {
                 var schema = new OpenApiSchema
                 {
@@ -80,7 +80,7 @@ namespace OmenX.OpenApiFilters
                         ["Message"] = new OpenApiString("存在SQL执行时间大于10秒")
                     }
                 };
-                context.SchemaRepository.Schemas.Add(typeof(OmeXCheckResult).FullName, schema);
+                context.SchemaRepository.Schemas.Add(omeXCheckResultId, schema);
             }
 
             foreach (var checkPointType in _omenXCheckPointTypeStore.Types)
@@ -113,7 +113,7 @@ namespace OmenX.OpenApiFilters
                                             Reference = new OpenApiReference
                                             {
                                                 Type = ReferenceType.Schema,
-                                                Id = typeof(OmeXCheckResult).FullName
+                                                Id = omeXCheckResultId
                                             }
                                         }
                                     }

@@ -1,0 +1,120 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OmenX API",
+    "description": "\r\n## 系统功能\r\n提供分布式检查点（Checkpoint）的自动化验证能力，覆盖:\r\n- 数据库健康状态\r\n- 服务连通性\r\n- 关键业务指标\r\n- 自定义业务规则检查\r\n\r\n## 使用场景\r\n- **运维监控**：实时系统健康度检测\r\n- **CI/CD**：部署后自动化验证\r\n- **故障排查**：快速定位问题层级\r\n`",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/omen-x/checklists": {
+      "get": {
+        "tags": [
+          "OmenX"
+        ],
+        "summary": "获取所有检查点",
+        "description": "在系统定义完检查点之后，会通过这个接口返回，包含请求的路由，标题和描述",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Title": {
+                        "type": "string"
+                      },
+                      "Description": {
+                        "type": "string"
+                      },
+                      "Url": {
+                        "type": "string"
+                      }
+                    },
+                    "example": {
+                      "Title": "慢SQL检查",
+                      "Description": "检查是否存在执行时间大于10s的SQL",
+                      "Url": "/api/omen-x/slow-sql"
+                    }
+                  },
+                  "description": "检查点详情列表"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/omen-x/dbconnectnormalcheckpoint": {
+      "post": {
+        "tags": [
+          "OmenX"
+        ],
+        "summary": "数据库连接检查点",
+        "description": "检查数据库连接是否正常",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OmenX_Contracts_OmeXCheckResult"
+                  },
+                  "description": "检查结果列表"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/omen-x/slowsqlcheckpoint": {
+      "post": {
+        "tags": [
+          "OmenX"
+        ],
+        "summary": "慢SQL检查点",
+        "description": "检查是否存在慢SQL",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OmenX_Contracts_OmeXCheckResult"
+                  },
+                  "description": "检查结果列表"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OmenX_Contracts_OmeXCheckResult": {
+        "type": "object",
+        "properties": {
+          "Result": {
+            "type": "string"
+          },
+          "Message": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "Result": "Warning",
+          "Message": "存在SQL执行时间大于10秒"
+        }
+      }
+    }
+  }
+}

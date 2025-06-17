@@ -13,7 +13,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "api": "sync-api --url https://localhost:7115/swagger/V1/swagger.json {@} --"
+    "api": "sync-api --url https://localhost:7000/swagger/omen-x/swagger.json {@} --"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.17",
