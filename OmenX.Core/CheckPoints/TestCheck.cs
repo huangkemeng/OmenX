@@ -2,10 +2,12 @@
 
 namespace OmenX.Core.CheckPoints;
 
+[CheckPointMetadata(Title = "Test check", Description = "Test check description")]
 public class TestCheck : IOmenXCheckPoint
 {
-    public async Task CheckAsync(OmeXCheckPointContext checkContext)
+    public Task CheckAsync(OmeXCheckPointContext checkContext)
     {
-        checkContext.Success(true, "Good");
+        checkContext.Success(true, "test pass");
+        return Task.CompletedTask;
     }
 }
