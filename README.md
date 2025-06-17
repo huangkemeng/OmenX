@@ -54,6 +54,24 @@ Visit url like  https://[yourserver]/omenx-ui
 ![OmenX](image.png "OmenX")
 
 
+### Other features
+
+- Configure swagger
+
+```cs
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddOmenXApiDoc();
+});
+
+app.UseSwaggerUI(options =>
+{
+    options.UseOmenXApiDoc();
+})
+```
+- Visit swagger
+
+![Swagger](image-1.png "Swagger")
 
 
  #### Write a checkpoint to detect problems early
