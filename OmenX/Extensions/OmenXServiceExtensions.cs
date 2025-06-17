@@ -60,7 +60,6 @@ namespace OmenX.Extensions
 
             options.DocInclusionPredicate((docName, apiDesc) =>
             {
-                // 根据文档名称过滤API
                 if (docName == "omen-x")
                 {
                     return apiDesc.RelativePath.Contains("/omen-x/");
@@ -78,6 +77,7 @@ namespace OmenX.Extensions
 
         public static T UseOmenX<T>(this T app) where T : IApplicationBuilder
         {
+            var reqList = new List<(string Url, string Title, string Description)>();
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var checkPoints = scope.ServiceProvider.GetServices<IOmenXCheckPoint>();
@@ -85,13 +85,18 @@ namespace OmenX.Extensions
                 {
                     foreach (var checkPoint in checkPoints)
                     {
-                        app.Map($"/api/omen-x/{checkPoint.GetType().Name.ToLower()}", (builder) =>
+                        var url = $"/api/omen-x/{checkPoint.GetType().Name.ToLower()}";
+                        var type = checkPoint.GetType();
+                        var metadata = type.GetCustomAttribute<CheckPointMetadataAttribute>();
+                        reqList.Add((url, metadata?.Title ?? type.Name, metadata?.Description ?? ""));
+                        app.Map(url, builder =>
                         {
                             builder.Use(async (ctx, next) =>
                             {
                                 if (!ctx.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
                                 {
                                     ctx.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+                                    return;
                                 }
 
                                 var checkResult = new OmeXCheckPointContext();
@@ -103,6 +108,22 @@ namespace OmenX.Extensions
                     }
                 }
             }
+
+            app.Map("/api/omen-x/checklists", builder =>
+            {
+                builder.Use(async (ctx, next) =>
+                {
+                    if (!ctx.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ctx.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+                        return;
+                    }
+
+                    ctx.Response.ContentType = "application/json";
+                    await ctx.Response.WriteAsync(
+                        JsonConvert.SerializeObject(reqList.Select(x => new { x.Url, x.Title, x.Description })));
+                });
+            });
 
             return app;
         }
