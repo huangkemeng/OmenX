@@ -6,28 +6,34 @@ namespace OmenX.Contracts
     {
         internal List<OmeXCheckResult> Results { get; set; } = new List<OmeXCheckResult>();
 
-        public void Warn(bool predication, string message = null)
+        public OmeXCheckPointContext Warn(bool predication, string message = null)
         {
             if (predication)
             {
                 Results.Add(OmeXCheckResult.Warn(message));
             }
+
+            return this;
         }
 
-        public void Error(bool predication, string message = null)
+        public OmeXCheckPointContext Error(bool predication, string message = null)
         {
             if (predication)
             {
                 Results.Add(OmeXCheckResult.Error(message));
             }
+
+            return this;
         }
 
-        public void Success(bool predication, string message = null)
+        public OmeXCheckPointContext Success(bool predication, string message = null)
         {
             if (predication)
             {
                 Results.Add(OmeXCheckResult.Success(message));
             }
+
+            return this;
         }
     }
 }

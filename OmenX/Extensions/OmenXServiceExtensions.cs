@@ -127,31 +127,30 @@ namespace OmenX.Extensions
                         JsonConvert.SerializeObject(reqList.Select(x => new { x.Url, x.Title, x.Description })));
                 });
             });
-            
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
-                        "wwwroot/assets")),
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                        "omenxroot", "assets")),
                 RequestPath = "/assets" // 访问路径前缀
             });
             app.Map("/omenx-ui", builder =>
             {
                 builder.Run(async context =>
                 {
-                    var assembly = Assembly.GetExecutingAssembly();
-                    string resourceName = $"{assembly.GetName().Name}.wwwroot.index.html";
-                    using (var stream = assembly.GetManifestResourceStream(resourceName))
-                    {
-                        if (stream == null)
-                        {
-                            context.Response.StatusCode = 404;
-                            return;
-                        }
+                    string binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                        context.Response.ContentType = "text/html";
-                        await stream.CopyToAsync(context.Response.Body);
+                    string indexPath = Path.Combine(binPath, "omenxroot", "index.html");
+
+                    if (!File.Exists(indexPath))
+                    {
+                        context.Response.StatusCode = 404;
+                        await context.Response.WriteAsync("File not found");
+                        return;
                     }
+
+                    context.Response.ContentType = "text/html";
+                    await context.Response.SendFileAsync(indexPath);
                 });
             });
             return app;
