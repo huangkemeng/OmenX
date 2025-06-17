@@ -1,9 +1,9 @@
-import IndexView from './index.vue'
+import IndexView from './index-view.vue'
 import type {RouteRecordRaw} from "vue-router";
 
 export default [
   {
-    path: '/omenx',
+    path: '/omenx-ui',
     name: 'omenx',
     component: IndexView
   },

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -124,7 +127,33 @@ namespace OmenX.Extensions
                         JsonConvert.SerializeObject(reqList.Select(x => new { x.Url, x.Title, x.Description })));
                 });
             });
+            
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+                        "wwwroot/assets")),
+                RequestPath = "/assets" // 访问路径前缀
+            });
+            app.Map("/omenx-ui", builder =>
+            {
+                builder.Run(async context =>
+                {
+                    var assembly = Assembly.GetExecutingAssembly();
+                    string resourceName = $"{assembly.GetName().Name}.wwwroot.index.html";
+                    using (var stream = assembly.GetManifestResourceStream(resourceName))
+                    {
+                        if (stream == null)
+                        {
+                            context.Response.StatusCode = 404;
+                            return;
+                        }
 
+                        context.Response.ContentType = "text/html";
+                        await stream.CopyToAsync(context.Response.Body);
+                    }
+                });
+            });
             return app;
         }
 

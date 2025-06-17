@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
-    "build": "run-p type-check \"build:all {@}\" --",
+    "build": "run-p type-check \"build:production {@}\" --",
     "build:all": "run-s api build:staging build:production",
     "build:staging": "vite build --mode staging",
     "build:production": "vite build --mode production",

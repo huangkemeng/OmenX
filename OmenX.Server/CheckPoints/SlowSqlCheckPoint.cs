@@ -7,7 +7,6 @@ public class SlowSqlCheckPoint : IOmenXCheckPoint
 {
     public Task CheckAsync(OmeXCheckPointContext checkContext)
     {
-        checkContext.Error(10 > 0, "存在SQL执行时间大于10s的");
         return Task.CompletedTask;
     }
 }

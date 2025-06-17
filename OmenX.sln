@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmenX.Server", "OmenX.Serve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmenX", "OmenX\OmenX.csproj", "{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmenX.WebApi", "OmenX.WebApi\OmenX.WebApi.csproj", "{041B398A-6A4B-4A9D-9C34-D2C8D6BCC379}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA1D7FF5-4D3E-4086-B9B5-DF8A00376612}.Release|Any CPU.Build.0 = Release|Any CPU
+		{041B398A-6A4B-4A9D-9C34-D2C8D6BCC379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{041B398A-6A4B-4A9D-9C34-D2C8D6BCC379}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{041B398A-6A4B-4A9D-9C34-D2C8D6BCC379}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{041B398A-6A4B-4A9D-9C34-D2C8D6BCC379}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
