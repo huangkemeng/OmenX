@@ -1,62 +1,77 @@
-# OmenX  quick start
+# OmenX - Health Monitoring for .NET Applications
 
-## Install 
-```ps
+## Introduction
+OmenX provides comprehensive health monitoring for your .NET applications through customizable checkpoints and an intuitive UI.
+
+## Installation
+Add the OmenX package to your project using the .NET CLI:
+
+```shell
 dotnet add package OmenX --version 1.1.2
 ```
 
-##  Integration
+## Quick Start
 
-```cs 
-
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOmenX(typeof(Core).Assembly); // or builder.Services.AddOmenX();
-// Other actions  
-var app = builder.Build();
-app.UseOmenX();
-// Other actions  
-
-```
-
-### Development
-
-#### Write down  any checkpoint  you want in Core Project
+### Basic Integration
+Add OmenX to your ASP.NET Core application:
 
 ```cs
+var builder = WebApplication.CreateBuilder(args);
 
-[CheckPointMetadata(Title = "Test check", Description = "Test check description")]
-public class TestCheck : IOmenXCheckPoint
+// Register OmenX services
+builder.Services.AddOmenX(typeof(Core).Assembly); // or builder.Services.AddOmenX();
+
+var app = builder.Build();
+
+// Enable OmenX middleware
+app.UseOmenX();
+
+// Other application configuration
+```
+
+## Creating Checkpoints
+
+### Implementing a Checkpoint
+Create custom health checks by implementing `IOmenXCheckPoint`:
+
+```cs
+[CheckPointMetadata(
+    Title = "Database Connectivity Check", 
+    Description = "Verifies database connection health")]
+public class DatabaseCheck : IOmenXCheckPoint
 {
-    public Task CheckAsync(OmeXCheckPointContext checkContext)
+    public Task CheckAsync(OmeXCheckPointContext context)
     {
-        checkContext.Success(true, "test pass");
+        // Implement your check logic
+        context.Success(true, "Database connection successful");
         return Task.CompletedTask;
     }
 }
-
 ```
 
+## Using the Dashboard
 
-### Visit OmenX Check UI
-
+### Accessing the UI
+After setup, access the OmenX dashboard at:
 ```
-Visit url like  https://[yourserver]/omenx-ui
+https://[your-server]/omenx-ui
 ```
 
-### Start Check
-- Click  Start Check Button to check all(one by one)
-- Click Check button to check  one
+### Performing Checks
+- **Start Check**: Executes all checks sequentially
+- **Individual Check**: Run a specific checkpoint
 
-![OmenX](omenx-1.png "OmenX")
+![OmenX Dashboard](omenx-1.png "OmenX Dashboard Interface")
 
-### View Check Results
+### Viewing Results
+Checkpoint results are displayed with detailed status information:
 
-![OmenX](image.png "OmenX")
+![Check Results](image.png "OmenX Check Results")
 
+## Advanced Features
 
-### Other features
-
-- Configure swagger
+### Swagger Integration
+Enhance your API documentation with OmenX endpoints:
 
 ```cs
 builder.Services.AddSwaggerGen(options =>
@@ -67,11 +82,16 @@ builder.Services.AddSwaggerGen(options =>
 app.UseSwaggerUI(options =>
 {
     options.UseOmenXApiDoc();
-})
+});
 ```
-- Visit swagger
 
-![Swagger](image-1.png "Swagger")
+![Swagger Integration](image-1.png "OmenX in Swagger UI")
 
+## Best Practices
+- Implement checkpoints for critical system components
+- Use descriptive metadata for each checkpoint
+- Monitor frequently accessed endpoints
+- Combine with your existing monitoring solutions
+```
 
- #### Write a checkpoint to detect problems early
+Establish monitoring checkpoints for early issue detection!
