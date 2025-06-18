@@ -61,12 +61,12 @@ https://[your-server]/omenx-ui
 - **Start Check**: Executes all checks sequentially
 - **Individual Check**: Run a specific checkpoint
 
-![OmenX Dashboard](omenx-1.png "OmenX Dashboard Interface")
+![OmenX Dashboard](https://github.com/huangkemeng/OmenX/blob/master/omenx-1.png?raw=true "OmenX Dashboard Interface")
 
 ### Viewing Results
 Checkpoint results are displayed with detailed status information:
 
-![Check Results](image.png "OmenX Check Results")
+![Check Results](https://github.com/huangkemeng/OmenX/blob/master/image.png?raw=true "OmenX Check Results")
 
 ## Advanced Features
 
@@ -85,7 +85,7 @@ app.UseSwaggerUI(options =>
 });
 ```
 
-![Swagger Integration](image-1.png "OmenX in Swagger UI")
+![Swagger Integration](https://github.com/huangkemeng/OmenX/blob/master/image-1.png?raw=true "OmenX in Swagger UI")
 
 ## Best Practices
 - Implement checkpoints for critical system components
