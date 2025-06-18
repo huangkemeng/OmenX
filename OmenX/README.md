@@ -1,12 +1,97 @@
-﻿# OmenX
-## 系统功能
- 提供分布式检查点（Checkpoint）的自动化验证能力，覆盖:
- - 数据库健康状态
- - 服务连通性
- - 关键业务指标
- - 自定义业务规则检查
+﻿# OmenX - Health Monitoring for .NET Applications
 
- ## 使用场景
-- **运维监控**：实时系统健康度检测
-- **CI/CD**：部署后自动化验证
-- **故障排查**：快速定位问题层级
+## Introduction
+OmenX provides comprehensive health monitoring for your .NET applications through customizable checkpoints and an intuitive UI.
+
+## Installation
+Add the OmenX package to your project using the .NET CLI:
+
+```shell
+dotnet add package OmenX
+```
+
+## Quick Start
+
+### Basic Integration
+Add OmenX to your ASP.NET Core application:
+
+```cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Register OmenX services
+builder.Services.AddOmenX(typeof(Core).Assembly); // or builder.Services.AddOmenX();
+
+var app = builder.Build();
+
+// Enable OmenX middleware
+app.UseOmenX();
+
+// Other application configuration
+```
+
+## Creating Checkpoints
+
+### Implementing a Checkpoint
+Create custom health checks by implementing `IOmenXCheckPoint`:
+
+```cs
+[CheckPointMetadata(
+    Title = "Database Connectivity Check", 
+    Description = "Verifies database connection health")]
+public class DatabaseCheck : IOmenXCheckPoint
+{
+    public Task CheckAsync(OmeXCheckPointContext context)
+    {
+        // Implement your check logic
+        context.Success(true, "Database connection successful");
+        return Task.CompletedTask;
+    }
+}
+```
+
+## Using the Dashboard
+
+### Accessing the UI
+After setup, access the OmenX dashboard at:
+```
+https://[your-server]/omenx-ui
+```
+
+### Performing Checks
+- **Start Check**: Executes all checks sequentially
+- **Individual Check**: Run a specific checkpoint
+
+![OmenX Dashboard](omenx-1.png "OmenX Dashboard Interface")
+
+### Viewing Results
+Checkpoint results are displayed with detailed status information:
+
+![Check Results](image.png "OmenX Check Results")
+
+## Advanced Features
+
+### Swagger Integration
+Enhance your API documentation with OmenX endpoints:
+
+```cs
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddOmenXApiDoc();
+});
+
+app.UseSwaggerUI(options =>
+{
+    options.UseOmenXApiDoc();
+});
+```
+
+![Swagger Integration](image-1.png "OmenX in Swagger UI")
+
+## Best Practices
+- Implement checkpoints for critical system components
+- Use descriptive metadata for each checkpoint
+- Monitor frequently accessed endpoints
+- Combine with your existing monitoring solutions
+
+
+**Establish monitoring checkpoints for early issue detection!**

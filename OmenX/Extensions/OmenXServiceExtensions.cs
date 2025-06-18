@@ -132,7 +132,13 @@ namespace OmenX.Extensions
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                         "omenxroot", "assets")),
-                RequestPath = "/assets" // 访问路径前缀
+                RequestPath = "/assets"
+            });
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "omenxroot")),
+                RequestPath = "/omenx-ui"
             });
             app.Map("/omenx-ui", builder =>
             {
@@ -145,7 +151,7 @@ namespace OmenX.Extensions
                     if (!File.Exists(indexPath))
                     {
                         context.Response.StatusCode = 404;
-                        await context.Response.WriteAsync("File not found");
+                        await context.Response.WriteAsync("Page not found");
                         return;
                     }
 
