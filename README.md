@@ -92,6 +92,6 @@ app.UseSwaggerUI(options =>
 - Use descriptive metadata for each checkpoint
 - Monitor frequently accessed endpoints
 - Combine with your existing monitoring solutions
-```
 
-Establish monitoring checkpoints for early issue detection!
+
+**Establish monitoring checkpoints for early issue detection!**
