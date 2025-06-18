@@ -105,7 +105,7 @@ namespace OmenX.Extensions
                                 var checkResult = new OmeXCheckPointContext();
                                 await checkPoint.CheckAsync(checkResult);
                                 ctx.Response.ContentType = "application/json";
-                                await ctx.Response.WriteAsync(JsonConvert.SerializeObject(checkResult.Results));
+                                await ctx.Response.WriteAsync(JsonConvert.SerializeObject(checkResult.CheckResults));
                             });
                         });
                     }
