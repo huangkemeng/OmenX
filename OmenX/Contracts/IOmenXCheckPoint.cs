@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace OmenX.Contracts
 {
     public interface IOmenXCheckPoint
     {
-        Task CheckAsync(OmeXCheckPointContext checkContext);
+        Task CheckAsync(OmeXCheckPointContext checkContext, CancellationToken cancellationToken);
     }
 }

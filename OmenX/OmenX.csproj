@@ -15,4 +15,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.0.0"/>
     </ItemGroup>
+    <ItemGroup>
+        <Content Include="omenxroot\**\*" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
 </Project>

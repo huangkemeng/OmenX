@@ -11,13 +11,18 @@
           <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Checklist</h1>
             <button
-              @click="startAllChecks"
-              :disabled="isCheckingAll"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
+              v-if="isCheckingAll || checklistItems.some(e=>e.Checking)"
+              @click="cancelAllCheck"
+              class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
             >
-              <i
-                :class="['mr-2', isCheckingAll ? 'fas fa-spinner spin' : 'fas fa-play-circle']"></i>
-              {{ isCheckingAll ? 'Checking...' : 'Start Check' }}
+              Cancel All
+            </button>
+            <button
+              v-else
+              @click="startAllChecks"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
+            >
+              Check All
             </button>
           </div>
           <loading-wrapper :loading="checkListLoading">
@@ -33,11 +38,18 @@
                 </div>
                 <div class="flex items-center space-x-3">
                   <button
-                    :loading="item.Checking"
+                    v-if="!item.Checking"
                     @click="checkItem(item)"
-                    class="bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                    class="bg-green-100 text-green-600 hover:bg-green-200 px-3 py-1 rounded-full text-sm font-medium transition-colors"
                   >
-                    <i class="fas fa-play mr-1"></i> {{ (item.Checking ? 'Checking...' : 'Check') }}
+                    Check
+                  </button>
+                  <button
+                    v-else
+                    @click="cancelCheck(item)"
+                    class="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                  >
+                    Cancel
                   </button>
 
                   <a-popover title="Results" v-if="item.IsChecked && item.CheckResults.length > 0">
@@ -54,7 +66,7 @@
                   ]"
                     >
                   <i
-                    :class="[statusIcons[item.Status], item.Status === 'loading' ? 'spin' : '']"></i>
+                    :class="[statusIcons[item.Status], item.Status === 'checking' ? 'spin' : '']"></i>
                   {{ statusTexts[item.Status] }}
                 </span>
                   </a-popover>
@@ -65,7 +77,7 @@
                   ]"
                   >
                   <i
-                    :class="[statusIcons[item.Status], item.Status === 'loading' ? 'spin' : '']"></i>
+                    :class="[statusIcons[item.Status], item.Status === 'checking' ? 'spin' : '']"></i>
                   {{ statusTexts[item.Status] }}
                 </span>
 
@@ -120,9 +132,9 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, toRef} from 'vue'
+import {ref, computed, onMounted} from 'vue'
 import apiClient from "@/apis/ApiClient.ts";
-import axios from "axios";
+import axios, {type CancelTokenSource} from "axios";
 import {message} from "ant-design-vue";
 import loadingWrapper from '@/components/loading-wrapper/index-view.vue'
 
@@ -132,7 +144,8 @@ interface ChecklistItem {
   Description: string
   IsChecked: boolean
   Checking: boolean
-  Status: 'pending' | 'loading' | 'success' | 'error' | 'warning',
+  CancelTokenSource: CancelTokenSource
+  Status: 'pending' | 'checking' | 'success' | 'error' | 'warning',
   CheckResults: { Result: string, Message: string }[]
 }
 
@@ -142,7 +155,7 @@ const isCheckingAll = ref(false)
 
 const statusClasses = {
   pending: 'bg-gray-200 text-gray-600',
-  loading: 'bg-blue-100 text-blue-600',
+  checking: 'bg-blue-100 text-blue-600',
   success: 'bg-green-100 text-green-600',
   error: 'bg-red-100 text-red-600',
   warning: 'bg-yellow-100 text-yellow-600'
@@ -150,7 +163,7 @@ const statusClasses = {
 
 const statusIcons = {
   pending: 'far fa-clock',
-  loading: 'fas fa-spinner',
+  checking: 'fas fa-spinner',
   success: 'fas fa-check-circle',
   error: 'fas fa-times-circle',
   warning: 'fas fa-exclamation-triangle'
@@ -158,7 +171,7 @@ const statusIcons = {
 
 const statusTexts = {
   pending: 'Pending',
-  loading: 'Checking...',
+  checking: 'Checking...',
   success: 'Success',
   error: 'Error',
   warning: 'Warning'
@@ -168,11 +181,24 @@ const successCount = computed(() => checklistItems.value.filter(item => item.Sta
 const warningCount = computed(() => checklistItems.value.filter(item => item.Status === 'warning').length)
 const failureCount = computed(() => checklistItems.value.filter(item => item.Status === 'error').length)
 
+const cancelCheck = (item: ChecklistItem) => {
+  item.Checking = false;
+  item.CancelTokenSource.cancel('Check cancelled')
+  if (!item.IsChecked) {
+    item.Status = 'pending'
+  }
+}
+
 const checkItem = async (item: ChecklistItem) => {
-  item.Status = 'loading'
+  const oldStatus = item.Status;
+  item.Status = 'checking'
+  item.Checking = true;
   try {
-    const postRes = await axios.post(item.Url)
-      .loadingRequest(toRef(item.Checking));
+    item.CancelTokenSource = axios.CancelToken.source()
+    item.IsChecked = true;
+    const postRes = await axios.post(item.Url, {}, {
+      cancelToken: item.CancelTokenSource.token
+    });
     if (postRes.status == 200) {
       const data = postRes.data as { Message: string, Result: string }[];
       item.CheckResults = data;
@@ -187,11 +213,19 @@ const checkItem = async (item: ChecklistItem) => {
           item.Status = 'success';
         }
       }
-      item.IsChecked = true;
+    } else {
+      item.Status = 'error';
+      item.CheckResults = [{Message: 'check failed,please check network', Result: 'Error'}];
     }
-  } catch {
-    item.Status = 'pending'
-    message.error('check failed,please check network')
+  } catch (e) {
+    if (!axios.isCancel(e)) {
+      item.Status = 'error';
+      item.CheckResults = [{Message: 'check failed,please check network', Result: 'Error'}];
+    } else {
+      item.Status = oldStatus;
+    }
+  } finally {
+    item.Checking = false;
   }
 }
 
@@ -203,7 +237,8 @@ const getAllChecks = async () => {
     if (getRes.status == 200) {
       checklistItems.value = getRes.data.map<ChecklistItem>(e => ({
         ...(e as ChecklistItem),
-        Status: 'pending'
+        Status: 'pending',
+        CheckResults: []
       }));
     }
   } catch {
@@ -211,9 +246,16 @@ const getAllChecks = async () => {
   }
 }
 
+const cancelAllCheck = () => {
+  checklistItems.value.forEach(item => {
+    cancelCheck(item)
+  })
+  isCheckingAll.value = false
+}
 onMounted(async () => {
   await getAllChecks();
 })
+
 
 const startAllChecks = async () => {
   isCheckingAll.value = true

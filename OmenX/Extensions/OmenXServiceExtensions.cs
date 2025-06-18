@@ -81,34 +81,37 @@ namespace OmenX.Extensions
         public static T UseOmenX<T>(this T app) where T : IApplicationBuilder
         {
             var reqList = new List<(string Url, string Title, string Description)>();
-            using (var scope = app.ApplicationServices.CreateScope())
+            if (OmenXCheckPointTypeStore.Types != null && OmenXCheckPointTypeStore.Types.Any())
             {
-                var checkPoints = scope.ServiceProvider.GetServices<IOmenXCheckPoint>();
-                if (checkPoints != null)
+                foreach (var checkPointType in OmenXCheckPointTypeStore.Types)
                 {
-                    foreach (var checkPoint in checkPoints)
+                    var url = $"/api/omen-x/{checkPointType.Name.ToLower()}";
+                    var metadata = checkPointType.GetCustomAttribute<CheckPointMetadataAttribute>();
+                    reqList.Add((url, metadata?.Title ?? checkPointType.Name, metadata?.Description ?? ""));
+                    app.Map(url, builder =>
                     {
-                        var url = $"/api/omen-x/{checkPoint.GetType().Name.ToLower()}";
-                        var type = checkPoint.GetType();
-                        var metadata = type.GetCustomAttribute<CheckPointMetadataAttribute>();
-                        reqList.Add((url, metadata?.Title ?? type.Name, metadata?.Description ?? ""));
-                        app.Map(url, builder =>
+                        builder.Use(async (ctx, next) =>
                         {
-                            builder.Use(async (ctx, next) =>
+                            if (!ctx.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
                             {
-                                if (!ctx.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    ctx.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
-                                    return;
-                                }
+                                ctx.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+                                return;
+                            }
 
+                            var handler = ctx.RequestServices.GetRequiredService(checkPointType);
+                            if (handler is IOmenXCheckPoint checkPoint)
+                            {
                                 var checkResult = new OmeXCheckPointContext();
-                                await checkPoint.CheckAsync(checkResult);
+                                await checkPoint.CheckAsync(checkResult, ctx.RequestAborted);
                                 ctx.Response.ContentType = "application/json";
                                 await ctx.Response.WriteAsync(JsonConvert.SerializeObject(checkResult.CheckResults));
-                            });
+                            }
+                            else
+                            {
+                                ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
+                            }
                         });
-                    }
+                    });
                 }
             }
 
@@ -161,6 +164,7 @@ namespace OmenX.Extensions
                 t.IsClass && !t.IsAbstract && t.GetInterfaces().Contains(typeof(IOmenXCheckPoint)));
             foreach (var type in types)
             {
+                services.AddScoped(type);
                 services.AddScoped(typeof(IOmenXCheckPoint), type);
                 OmenXCheckPointTypeStore.Types.Add(type);
             }
