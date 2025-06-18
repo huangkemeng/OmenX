@@ -7,7 +7,7 @@ OmenX provides comprehensive health monitoring for your .NET applications throug
 Add the OmenX package to your project using the .NET CLI:
 
 ```shell
-dotnet add package OmenX --version 1.1.2
+dotnet add package OmenX
 ```
 
 ## Quick Start
