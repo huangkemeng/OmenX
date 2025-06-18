@@ -4,7 +4,7 @@
         <!-- Identifier that must be unique within the hosting gallery -->
         <id>OmenX</id>
         <!-- Package version number that is used when resolving dependencies -->
-        <version>1.1.4</version>
+        <version>1.1.5</version>
 
         <!-- Authors contain text that appears directly on the gallery -->
         <authors>matt.h</authors>
@@ -34,7 +34,7 @@
             - **故障排查**：快速定位问题层级
         </description>
 
-        <copyright>Copyright ©2016 MATT.H</copyright>
+        <copyright>Copyright ©2025 MATT.H</copyright>
 
         <tags>OmenX,Operation and maintenance,CI,CD</tags>
         <dependencies>
@@ -50,11 +50,11 @@
         </dependencies>
         <readme>docs\README.md</readme>
     </metadata>
-    
+
     <files>
         <file src="README.md" target="docs\"/>
         <file src="bin\Release\netstandard2.0\OmenX.dll" target="lib\netstandard2.0\OmenX.dll"/>
-        <file src="omenxroot\**\*" target="contentFiles\omenxroot" />
-        <file src="build\OmenX.targets" target="build\OmenX.targets" />
+        <file src="omenxroot\**\*" target="contentFiles\omenxroot"/>
+        <file src="build\OmenX.targets" target="build\OmenX.targets"/>
     </files>
 </package>

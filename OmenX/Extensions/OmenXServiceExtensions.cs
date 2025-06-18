@@ -130,13 +130,6 @@ namespace OmenX.Extensions
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                        "omenxroot", "assets")),
-                RequestPath = "/assets"
-            });
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "omenxroot")),
                 RequestPath = "/omenx-ui"
             });
