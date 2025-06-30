@@ -7,6 +7,7 @@ public class DbConnectNormalCheckPoint : IOmenXCheckPoint
 {
     public async Task CheckAsync(OmeXCheckPointContext checkContext, CancellationToken cancellationToken)
     {
+        await Task.Delay(5000, cancellationToken);
         checkContext.Success(true, "数据库连接正常");
         checkContext.Warn(10 > 0, "数据库连接时长超过10秒");
     }

@@ -39,7 +39,7 @@
                 <div class="flex items-center space-x-3">
                   <button
                     v-if="!item.Checking"
-                    @click="checkItem(item)"
+                    @click="checkOne(item)"
                     class="bg-green-100 text-green-600 hover:bg-green-200 px-3 py-1 rounded-full text-sm font-medium transition-colors"
                   >
                     Check
@@ -83,7 +83,7 @@
 
                   <button
                     v-if="item.Status !== 'pending'"
-                    @click="checkItem(item)"
+                    @click="checkOne(item)"
                     class="text-gray-400 hover:text-blue-500 transition-colors"
                   >
                     <i class="fas fa-sync-alt"></i>
@@ -182,11 +182,20 @@ const warningCount = computed(() => checklistItems.value.filter(item => item.Sta
 const failureCount = computed(() => checklistItems.value.filter(item => item.Status === 'error').length)
 
 const cancelCheck = (item: ChecklistItem) => {
-  item.Checking = false;
-  item.CancelTokenSource.cancel('Check cancelled')
-  if (!item.IsChecked) {
-    item.Status = 'pending'
+  if (item) {
+    if (item.CancelTokenSource) {
+      item.CancelTokenSource.cancel('Check cancelled')
+    }
+    item.Checking = false;
+    if (!item.IsChecked) {
+      item.Status = 'pending'
+    }
   }
+}
+
+const checkOne = async (item: ChecklistItem) => {
+  item.CancelTokenSource = axios.CancelToken.source()
+  await checkItem(item);
 }
 
 const checkItem = async (item: ChecklistItem) => {
@@ -194,7 +203,6 @@ const checkItem = async (item: ChecklistItem) => {
   item.Status = 'checking'
   item.Checking = true;
   try {
-    item.CancelTokenSource = axios.CancelToken.source()
     item.IsChecked = true;
     const postRes = await axios.post(item.Url, {}, {
       cancelToken: item.CancelTokenSource.token
@@ -215,12 +223,18 @@ const checkItem = async (item: ChecklistItem) => {
       }
     } else {
       item.Status = 'error';
-      item.CheckResults = [{Message: 'check failed,please check network', Result: 'Error'}];
+      item.CheckResults = [{
+        Message: 'Exception occurred during check,please check the internal error details of the checkpoint',
+        Result: 'Error'
+      }];
     }
   } catch (e) {
     if (!axios.isCancel(e)) {
       item.Status = 'error';
-      item.CheckResults = [{Message: 'check failed,please check network', Result: 'Error'}];
+      item.CheckResults = [{
+        Message: 'Exception occurred during check,please check the internal error details of the checkpoint',
+        Result: 'Error'
+      }];
     } else {
       item.Status = oldStatus;
     }
@@ -228,6 +242,15 @@ const checkItem = async (item: ChecklistItem) => {
     item.Checking = false;
   }
 }
+
+function chunkArray(array: Array<string | number | object>, chunkSize: number) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
 
 const checkListLoading = ref(false);
 const getAllChecks = async () => {
@@ -260,8 +283,16 @@ onMounted(async () => {
 const startAllChecks = async () => {
   isCheckingAll.value = true
   try {
-    for (const item of checklistItems.value) {
-      await checkItem(item)
+    const itemArrays = chunkArray(checklistItems.value, 5) as ChecklistItem[][]
+    itemArrays.forEach(items => {
+      items.forEach(item => {
+        item.CancelTokenSource = axios.CancelToken.source()
+      })
+    })
+    for (const items of itemArrays) {
+      await Promise.allSettled(items.map(item => {
+        return checkItem(item)
+      }))
     }
   } finally {
     isCheckingAll.value = false
